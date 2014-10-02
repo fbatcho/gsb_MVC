@@ -1,4 +1,6 @@
 ﻿<?php
+
+
 /** 
  * Classe d'accès aux données. 
  
@@ -17,7 +19,7 @@
 
 class PdoGsb{   		
       	private static $serveur='mysql:host=localhost';
-      	private static $bdd='dbname=gsbV2';   		
+      	private static $bdd='dbname=gsb_frais';   		
       	private static $user='root' ;    		
       	private static $mdp='' ;	
 		private static $monPdo;
@@ -54,13 +56,22 @@ class PdoGsb{
  * @return l'id, le nom et le prénom sous la forme d'un tableau associatif 
 */
 	public function getInfosVisiteur($login, $mdp){
-		$req = "select visiteur.id as id, visiteur.nom as nom, visiteur.prenom as prenom from visiteur 
-		where visiteur.login='$login' and visiteur.mdp='$mdp'";
+		$req = "select visiteur.id as id, visiteur.nom as nom, visiteur.prenom as prenom, visiteur.fonction as fonction
+                    from visiteur where visiteur.login='$login' and visiteur.mdp='$mdp'";
 		$rs = PdoGsb::$monPdo->query($req);
 		$ligne = $rs->fetch();
 		return $ligne;
 	}
 
+        
+        
+        public function getInfosComptable ($login, $mdp){
+		$req = "select comptable.id as id, comptable.nom as nom, comptable.prenom as prenom, comptable.fonction as fonction
+                    from comptable where comptable.login='$login' and comptable.mdp='$mdp'";
+		$rs = PdoGsb::$monPdo->query($req);
+		$ligne= $rs->fetch();
+		return $ligne;
+	}
 /**
  * Retourne sous forme d'un tableau associatif toutes les lignes de frais hors forfait
  * concernées par les deux arguments
