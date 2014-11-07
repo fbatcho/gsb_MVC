@@ -9,7 +9,7 @@ $action = $_REQUEST['action'];
 
 switch ($action) {
     case 'voirVisiteur': {
-            $lesVisiteurs = $pdo->getLesVisiteursetMois();
+            $lesVisiteurs = $pdo->getLesVisiteurs();
             $Key = array_keys($lesVisiteurs);
             $selectionnerVisiteur = $Key[0];
 
@@ -17,11 +17,12 @@ switch ($action) {
             break;
         }
     case 'LaFicheduVisiteur': {
-            $leMois = $_REQUEST['lstMois'];
-            $_SESSION['leMois'] = $leMois;
             $leVisiteur = $_REQUEST['lstVisiteur'];
             $_SESSION['leVisiteur'] = $leVisiteur;
-            $lesVisiteurs = $pdo->getLesVisiteursetMois();
+            $leMois = $_POST['lstMois'];
+            $_SESSION['leMois'] = $leMois;
+            
+            $lesVisiteurs = $pdo->getLesVisiteurs();
             $selectionnerVisiteur = $leVisiteur;
             include("vues/v_voirVisiteur.php");
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($leVisiteur, $leMois);
@@ -42,7 +43,7 @@ switch ($action) {
             $leVisiteur = $_SESSION['leVisiteur'];
             $leMois = $_SESSION['leMois'];
             $lesFrais = $_REQUEST['lesFrais'];
-            $lesVisiteurs = $pdo->getLesVisiteursetMois();
+            $lesVisiteurs = $pdo->getLesVisiteurs();
             $selectionnerVisiteur = $leVisiteur;
             include("vues/v_voirVisiteur.php");
             $lesFraisHorsForfait = $pdo->getLesFraisHorsForfait($leVisiteur, $leMois);
@@ -70,35 +71,48 @@ switch ($action) {
     case 'supprimerFrais': {
             $idFrais = $_REQUEST['idFrais'];
             $rs = $pdo->ModifFraisHorsForfait($idFrais);
-            if($rs==0){
-             ajouterErreur('La fiche frais a été supprimé');
-             $type=1;
-             include("vues/v_erreurs.php");
+
+            if ($rs == 0) {
+                ajouterErreur('La fiche frais a été supprimé');
+                $type = 1;
+                include("vues/v_erreurs.php");
+            } else {
+                ajouterErreur("Cette ligne a déjà été supprimé");
+                include("vues/v_erreurs.php");
             }
- else {
-     ajouterErreur("La ligne n'a pas été supprimé");
-     include("vues/v_erreurs.php");
- }
-            
+
             break;
         }
     case "reporterFrais": {
-           $mois=$_SESSION['leMois'];
-           var_dump($mois);
-           $unmois= substr($mois,4,2);
-           var_dump($mois);
-        break; }
+
+            $mois = $_SESSION['leMois'];
+            $leVisiteur = $_SESSION['leVisiteur'];
+            $idFrais = $_REQUEST['idFrais'];
+            $rs = $pdo->reporterFrais($idFrais, $mois, $leVisiteur);
+            if ($rs==0) {
+                ajouterErreur("Le Frais a bien été reporter");
+                $type = 1;
+                include("vues/v_erreurs.php");
+            } else {
+                ajouterErreur("Le Frais n'a pas été reporter");
+                include("vues/v_erreurs.php");
+            }
+            break;
+        }
     case "validerFrais": {
             $leVisiteur = $_SESSION['leVisiteur'];
             $leMois = $_SESSION['leMois'];
             $nbJustificatifs = $_REQUEST['nbJustificatifs'];
-            $pdo->majEtatFicheFrais($leVisiteur, $leMois, "VA", $nbJustificatifs);
-            ajouterErreur('La Fiche frais a bien été validé!');
-            $type=1;
-            include("vues/v_erreurs.php");
+            $rs = $pdo->majEtatFicheFrais($leVisiteur, $leMois, "VA", $nbJustificatifs);
+            if ($rs== 0) {
+                ajouterErreur('La Fiche frais a bien été validé!');
+                $type = 1;
+                include("vues/v_erreurs.php");
+            } else {
+                ajouterErreur("La Fiche frais n'a pas été validé!");
+                include("vues/v_erreurs.php");
+            }
+            break;
         }
-
-
-        break;
 }
 ?>
