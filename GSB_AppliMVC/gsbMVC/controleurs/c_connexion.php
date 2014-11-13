@@ -30,9 +30,17 @@ switch ($action) {
                 connecter($id, $nom, $prenom);
                 include("vues/v_sommaireC.php");
             } 
-            
+            else {
+               
+           
+                ajouterErreur("Login ou mot de passe incorrect");
+                include("vues/v_erreurs.php");
+                include("vues/v_connexion.php");
+            }
                }
                else {
+               
+           
                 ajouterErreur("Login ou mot de passe incorrect");
                 include("vues/v_erreurs.php");
                 include("vues/v_connexion.php");

@@ -21,7 +21,7 @@ switch ($action) {
             $_SESSION['leVisiteur'] = $leVisiteur;
             $leMois = $_POST['lstMois'];
             $_SESSION['leMois'] = $leMois;
-            
+
             $lesVisiteurs = $pdo->getLesVisiteurs();
             $selectionnerVisiteur = $leVisiteur;
             include("vues/v_voirVisiteur.php");
@@ -30,6 +30,11 @@ switch ($action) {
             $lesInfosFicheFrais = $pdo->getLesInfosFicheFrais($leVisiteur, $leMois);
             $numAnnee = substr($leMois, 0, 4);
             $numMois = substr($leMois, 4, 2);
+            if ($lesFraisForfait == NULL & $lesFraisHorsForfait == NULL & $lesInfosFicheFrais == NULL) {
+                ajouterErreur("Ce visiteur n'a pas remplit de fiche frais le " . $numMois . "éme mois");
+                include("vues/v_erreurs.php");
+                break;
+            }
             $libEtat = $lesInfosFicheFrais['libEtat'];
             $montantValide = $lesInfosFicheFrais['montantValide'];
             $nbJustificatifs = $lesInfosFicheFrais['nbJustificatifs'];
@@ -89,12 +94,13 @@ switch ($action) {
             $leVisiteur = $_SESSION['leVisiteur'];
             $idFrais = $_REQUEST['idFrais'];
             $rs = $pdo->reporterFrais($idFrais, $mois, $leVisiteur);
-            if ($rs==0) {
+            if ($rs == 1) {
+                ajouterErreur("Le Frais est déjà supprimé il ne peut pas être reporter");
+                include("vues/v_erreurs.php");
+            }
+            if ($rs == NULL) {
                 ajouterErreur("Le Frais a bien été reporter");
                 $type = 1;
-                include("vues/v_erreurs.php");
-            } else {
-                ajouterErreur("Le Frais n'a pas été reporter");
                 include("vues/v_erreurs.php");
             }
             break;
@@ -104,7 +110,19 @@ switch ($action) {
             $leMois = $_SESSION['leMois'];
             $nbJustificatifs = $_REQUEST['nbJustificatifs'];
             $rs = $pdo->majEtatFicheFrais($leVisiteur, $leMois, "VA", $nbJustificatifs);
-            if ($rs== 0) {
+
+            $tabMontant = $pdo->getLesMontants();
+            
+            $tabQuantites = $pdo->getLesQuantites($leVisiteur, $leMois);
+            $montant = 0;
+            for ($i = 0; $i < 4; $i++) {
+                $montant += ($tabMontant[$i][0] * $tabQuantites[$i][0]);
+            }
+            $montantHorsForfait = $pdo->getMontantHorsForfait($leVisiteur, $leMois);
+           
+            $montant += $montantHorsForfait[0];
+            $pdo->majMontantValide($leVisiteur, $leMois, $montant);
+            if ($rs == 0) {
                 ajouterErreur('La Fiche frais a bien été validé!');
                 $type = 1;
                 include("vues/v_erreurs.php");
