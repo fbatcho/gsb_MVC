@@ -73,7 +73,7 @@ class PdoGsb {
     }
 
     public function getLesVisiteurs() {
-        $req = "select distinct id, nom, prenom from visiteur v,fichefrais f where v.id=f.idVisiteur and f.idEtat='CL' group by nom";
+        $req = "select distinct id, nom, prenom from visiteur group by nom";
         $rs = PdoGsb::$monPdo->query($req);
         $ligne = $rs->fetchAll();
 
@@ -334,26 +334,63 @@ class PdoGsb {
         if (preg_match("/REFUSE-/", $Laligne['libelle']) == 0) {
             $req1 = "update lignefraishorsforfait set libelle='REFUSE-" . $Laligne['libelle'] . "' where lignefraishorsforfait.id =$idFrais ";
             PdoGsb::$monPdo->exec($req1);
-            $match=0;
+            $match = 0;
         } else {
-            $match=1;
+            $match = 1;
         }
         return $match;
     }
 
     public function reporterFrais($idFrais, $mois, $idVisiteur) {
+         $req = "select libelle from lignefraishorsforfait where id =$idFrais ";
+
+        $rs = PdoGsb::$monPdo->query($req);
+        $Laligne = $rs->fetch();
+        if (preg_match("/REFUSE-/", $Laligne['libelle']) == 0) {
+            
+        
         $unmois = substr($mois, 4, 2);
         $unmois++;
         if ($unmois > 12) {
             $unmois = 01;
         }
-        $mois = substr_replace( $mois, $unmois, 4);
+        $mois = substr_replace($mois, $unmois, 4);
         if ($this->estPremierFraisMois($idVisiteur, $mois) == TRUE) {
             $this->creeNouvellesLignesFrais($idVisiteur, $mois);
-            $this->majEtatFicheFrais($idVisiteur, $mois, 'CR',0);
+            $this->majEtatFicheFrais($idVisiteur, $mois, 'CR', 0);
+            return 1;
         }
         $req = "update lignefraishorsforfait set mois = '" . $mois . "' where id = " . $idFrais;
+        PdoGsb::$monPdo->exec($req);}
+ else {
+    return 1;
+ }
+    }
+
+    public function majMontantValide($idVisiteur, $mois, $montant) {
+        $req = "update fichefrais set montantvalide = " . $montant . " where idvisiteur = '" . $idVisiteur . "' and mois = '" . $mois . "'";
         PdoGsb::$monPdo->exec($req);
+    }
+
+    public function getLesMontants() {
+        $req = "select montant from fraisforfait order by id";
+        $ligneResultat = pdoGsb::$monPdo->query($req);
+        $fetchAll = $ligneResultat->fetchall();
+        return $fetchAll;
+    }
+
+    public function getLesQuantites($idVisiteur, $mois) {
+        $req = "select quantite from lignefraisforfait where idvisiteur = '" . $idVisiteur . "' and mois = '" . $mois . "' order by idfraisforfait";
+        $ligneResultat = PdoGsb::$monPdo->query($req);
+        $fetchAll = $ligneResultat->fetchall();
+        return $fetchAll;
+    }
+
+    public function getMontantHorsForfait($idVisiteur, $mois) {
+        $req = "select sum(montant) from lignefraishorsforfait where idvisiteur = '" . $idVisiteur . "' and mois = '" . $mois . "' and libelle not LIKE '%REFUSE%'";
+        $ligneResultat = PdoGsb::$monPdo->query($req);
+        $fetch = $ligneResultat->fetch();
+        return $fetch;
     }
 
 }
