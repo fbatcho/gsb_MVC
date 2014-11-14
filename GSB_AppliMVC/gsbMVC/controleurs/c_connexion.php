@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if (!isset($_REQUEST['action'])) {
     $_REQUEST['action'] = 'demandeConnexion';
 }
@@ -10,7 +10,7 @@ switch ($action) {
         }
     case 'valideConnexion': {
             $login = $_REQUEST['login'];
-            $mdp = $_REQUEST['mdp'];
+            $mdp = $_REQUEST['mdp'];            
             $visiteur = $pdo->getInfosVisiteur($login, $mdp);
 
             if (is_array($visiteur)) {

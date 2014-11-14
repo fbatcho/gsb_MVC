@@ -109,7 +109,7 @@ switch ($action) {
             $leVisiteur = $_SESSION['leVisiteur'];
             $leMois = $_SESSION['leMois'];
             $nbJustificatifs = $_REQUEST['nbJustificatifs'];
-            $rs = $pdo->majEtatFicheFrais($leVisiteur, $leMois, "VA", $nbJustificatifs);
+            $rs = $pdo->majEtatFicheFrais2($leVisiteur, $leMois, "VA", $nbJustificatifs);
 
             $tabMontant = $pdo->getLesMontants();
             
