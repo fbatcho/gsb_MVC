@@ -80,6 +80,7 @@ class PdoGsb {
 
         return $ligne;
     }
+   
     
     /**
      * Retourne sous forme d'un tableau associatif toutes les lignes de frais hors forfait

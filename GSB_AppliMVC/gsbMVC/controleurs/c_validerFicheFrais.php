@@ -30,12 +30,21 @@ switch ($action) {
             $lesInfosFicheFrais = $pdo->getLesInfosFicheFrais($leVisiteur, $leMois);
             $numAnnee = substr($leMois, 0, 4);
             $numMois = substr($leMois, 4, 2);
-            if ($lesFraisForfait == NULL & $lesFraisHorsForfait == NULL & $lesInfosFicheFrais == NULL) {
+            $idEtat=$lesInfosFicheFrais['idEtat'];
+           
+            if ($idEtat!='CL'){
+            ajouterErreur("Ce visiteur n'a pas remplit de fiche frais le " . $numMois . "éme mois");
+                include("vues/v_erreurs.php");
+                break;    
+            }
+            if ($lesFraisForfait == NULL & $lesFraisHorsForfait == NULL & $lesInfosFicheFrais == NULL ) {
                 ajouterErreur("Ce visiteur n'a pas remplit de fiche frais le " . $numMois . "éme mois");
                 include("vues/v_erreurs.php");
                 break;
+            
             }
             $libEtat = $lesInfosFicheFrais['libEtat'];
+            
             $montantValide = $lesInfosFicheFrais['montantValide'];
             $nbJustificatifs = $lesInfosFicheFrais['nbJustificatifs'];
             $dateModif = $lesInfosFicheFrais['dateModif'];
@@ -65,7 +74,9 @@ switch ($action) {
             if (lesQteFraisValides($lesFrais)) {
                 $pdo->majFraisForfait($leVisiteur, $leMois, $lesFrais);
 
-                echo ' les éléments forfaitisés on été modifiée!';
+                 ajouterErreur("les éléments forfaitisés on été modifiée!");
+                 $type=1;
+                 include("vues/v_erreurs.php");
             } else {
                 ajouterErreur("Les valeurs des frais doivent être numériques");
                 include("vues/v_erreurs.php");
