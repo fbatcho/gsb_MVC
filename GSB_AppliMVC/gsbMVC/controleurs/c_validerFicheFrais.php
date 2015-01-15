@@ -8,7 +8,7 @@ $action = $_REQUEST['action'];
 
 
 switch ($action) {
-    case 'voirVisiteur': {
+    case 'voirVisiteur': { 
             $lesVisiteurs = $pdo->getLesVisiteurs();
             $Key = array_keys($lesVisiteurs);
             $selectionnerVisiteur = $Key[0];
