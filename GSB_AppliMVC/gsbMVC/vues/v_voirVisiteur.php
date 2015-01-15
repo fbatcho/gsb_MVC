@@ -8,7 +8,7 @@
             <p>
                 <label for="lstVisiteur" accesskey="l">Visiteur : </label>
                 <select id="lstVisiteur" name="lstVisiteur">
-                    <?php
+                    <?php 
                     foreach ($lesVisiteurs as $unVisiteur) {
                         $id = $unVisiteur['id'];
                         $nom = $unVisiteur['nom'];
