@@ -21,7 +21,7 @@
             ?>
         </tr>
         <tr>
-        <form action="index.php?uc=validerFicheFrais&action=ModifFiche" method="post"> 
+        <form action="index.php?uc=validerFicheFrais&action=ModifFiche" method="post">  
             <?php
             
             foreach ($lesFraisForfait as $unFraisForfait) {
