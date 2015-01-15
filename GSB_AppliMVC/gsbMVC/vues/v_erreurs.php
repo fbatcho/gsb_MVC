@@ -6,7 +6,7 @@ foreach($_REQUEST['erreurs'] as $erreur)
     if(isset($type)){
         echo "<li style='background:#D5EF9A' color:#7EA12C>$erreur</li>";
     }
- else {
+ else { 
         
       echo "<li>$erreur</li>";
  }
