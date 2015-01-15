@@ -66,7 +66,11 @@
             $libelle = $unFraisHorsForfait['libelle'];
             $montant = $unFraisHorsForfait['montant'];
             $id = $unFraisHorsForfait['id'];
-             
+             if (strstr($libelle,"REFUSE")){
+                 $r=true;
+                 
+             }
+             $r=FALSE
              
             ?>
             <tr>
